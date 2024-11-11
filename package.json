@@ -1,0 +1,41 @@
+{
+  "name": "sam_web3_learning",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@nextui-org/react": "^2.4.8",
+    "@rainbow-me/rainbowkit": "^2.2.0",
+    "@tanstack/react-query": "^5.59.16",
+    "ahooks": "^3.8.1",
+    "axios": "^1.7.7",
+    "blo": "^1.2.0",
+    "ethers": "^6.13.4",
+    "framer-motion": "^11.11.10",
+    "next": "14.2.16",
+    "next-themes": "^0.3.0",
+    "opensea-js": "^7.1.14",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-jazzicon": "^1.0.4",
+    "viem": "^2.21.39",
+    "wagmi": "^2.12.25",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.16",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
