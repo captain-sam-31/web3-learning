@@ -4,8 +4,6 @@ interface IMessage {
 }
 
 export interface StoreModel {
-  msg: IMessage;
-  setMsg: (msg: IMessage) => void;
   updateNFTMarket: number;
   setUpdateNFTMarket: (updateNFTMarket: number) => void;
 }

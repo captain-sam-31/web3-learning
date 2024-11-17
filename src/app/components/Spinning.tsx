@@ -1,4 +1,5 @@
-import { Spinner, SpinnerProps } from "@nextui-org/react";
+import { bgBlock } from "@/utils/commonClass";
+import { cn, Spinner, SpinnerProps } from "@nextui-org/react";
 import { memo } from "react";
 
 interface SpinningProps extends SpinnerProps {
@@ -8,7 +9,11 @@ interface SpinningProps extends SpinnerProps {
 const Spinning = (props: SpinningProps) => {
   const { visible, ...rest } = props;
 
-  return visible ? <Spinner className="absolute top-1/2 left-1/2" {...rest} /> : null;
+  return visible ? (
+    <div className={cn("absolute rounded-large flex items-center justify-center size-full z-[999]", bgBlock)}>
+      <Spinner label="Loading..." {...rest} />
+    </div>
+  ) : null;
 };
 
 export default memo(Spinning);

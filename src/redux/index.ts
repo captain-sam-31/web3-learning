@@ -5,8 +5,6 @@ import { StoreModel } from "./storeModel";
 export const useMyRedux = create(
   persist<StoreModel>(
     (set, get) => ({
-      msg: { content: "" },
-      setMsg: (msg) => set({ ...get(), msg }),
       updateNFTMarket: 0,
       setUpdateNFTMarket: (timestamp) => set({ ...get(), updateNFTMarket: timestamp }),
     }),

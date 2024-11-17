@@ -2,7 +2,19 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+1.先部署 NFT 合约，再部署 WaterToken 合约
+
+2.在根目录创建.env 文件，并添加以下环境变量
+
+# 所有 NFT metadata 的 json 配置文件
+
+NFT_IPFS_JSON_URL=.....
+
+# 用于部署合约那个 MetaMask 账户的 私钥
+
+OWNER_PRIVATE_KEY=....
+
+3.安装依赖，启动项目
 
 ```bash
 # 安装依赖（别用pnpm安装，否则有些依赖版本会错乱）

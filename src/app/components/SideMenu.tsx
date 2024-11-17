@@ -1,5 +1,6 @@
 "use client";
-import { Listbox, ListboxItem } from "@nextui-org/react";
+import { bgBlock } from "@/utils/commonClass";
+import { cn, Listbox, ListboxItem } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
 import { Key, useState } from "react";
 
@@ -21,7 +22,7 @@ export default function SideMenu() {
   const currKey = seletected.replace(/\/(.+)-page/, (...all) => all[1]);
 
   return (
-    <aside className="w-1/6 shrink-0 bg-black/5 dark:bg-white/10 overflow-auto hidden sm:block rounded-large">
+    <aside className={cn("w-1/6 shrink-0 overflow-auto hidden sm:block", bgBlock)}>
       {/* className={`[&_li[tabindex="0"]]:bg-primary`} */}
       <Listbox selectedKeys={"water"} aria-label="side menu" onAction={handleMenu}>
         {items.map((v) => (

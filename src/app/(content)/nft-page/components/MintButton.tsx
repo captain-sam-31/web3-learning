@@ -2,46 +2,30 @@
 import { MetaDataItem } from "../types";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip } from "@nextui-org/react";
 import HammerIcon from "@/assets/HammerIcon";
-import { getAccount, readContract, writeContract } from "@wagmi/core";
+import { getAccount } from "@wagmi/core";
 import { wagmiConfig } from "@/wagmi";
-import { nftContractAddr, targetNetId, targetNetName, targetNetRPC } from "@/utils/constants";
+import { targetNetId, targetNetName } from "@/utils/constants";
 import { memo, useState } from "react";
-import { useRequest } from "ahooks";
-import { NftContractAbi } from "@/abi/NftContract";
 import { useMyRedux } from "@/redux";
-import { ethers } from "ethers";
+import { useWriteNFT, useReadNFT } from "@/hooks/useNFTContract";
+import { useMessage } from "@/app/components/MessageProvider";
 
 interface IMetaInfo {
   metaInfo: MetaDataItem;
 }
-const provider = new ethers.JsonRpcProvider(targetNetRPC);
 
 const MintButton = (props: IMetaInfo) => {
   const { metaInfo } = props;
-  const { setMsg, setUpdateNFTMarket } = useMyRedux((state) => state);
+  const { setUpdateNFTMarket } = useMyRedux((state) => state);
+  const { errorMsg, successMsg, infoMsg } = useMessage();
 
   const [visible, setVisible] = useState<boolean>(false);
   const [target, setTarget] = useState<string>("");
 
   // 获取合约持有者
-  const { runAsync: ownerFn, loading: ownerLoading } = useRequest(
-    () => readContract(wagmiConfig, { abi: NftContractAbi, address: nftContractAddr, functionName: "owner" }),
-    { manual: true }
-  );
-  // 铸造nft
-  const { runAsync: mintFn, loading: mintLoading } = useRequest(
-    async (addr) => {
-      const hash = await writeContract(wagmiConfig, {
-        abi: NftContractAbi,
-        address: nftContractAddr,
-        functionName: "safeMint",
-        args: [addr, metaInfo.tokenURI],
-      });
-      // 快速等2个区块确认，标准一般等6个区块确认，高安全性等12个区块确认
-      return provider.waitForTransaction(hash, 2);
-    },
-    { manual: true }
-  );
+  const { run: ownerFn, loading: ownerLoading } = useReadNFT({ functionName: "owner" });
+  // 铸造NFT
+  const { run: mintFn, loading: mintLoading } = useWriteNFT({ functionName: "safeMint", args: [target] });
   // 点击铸造按钮
   const handleMint = async () => {
     const account = getAccount(wagmiConfig);
@@ -52,37 +36,37 @@ const MintButton = (props: IMetaInfo) => {
             setTarget("");
             setVisible(true);
           } else {
-            setMsg({ content: "This account has no permission to operate." });
+            infoMsg("This account has no permission to operate.");
           }
         })
         .catch((err) => {
-          setMsg({ type: "err", content: err.message });
+          errorMsg(err.message);
         });
     } else {
-      setMsg({ content: `This action can only be executed on ${targetNetName}. Switch your network first.` });
+      infoMsg(`You need to connect Metamask first, and make sure your network is ${targetNetName}.`);
     }
   };
   // 确认铸造
   const handleOk = () => {
     if (target && /^0x[a-fA-F0-9]{40}$/.test(target)) {
-      mintFn(target)
+      mintFn(target, metaInfo.tokenURI)
         .then(() => {
           setUpdateNFTMarket(new Date().getTime());
-          setMsg({ type: "succ", content: "Mint success" });
+          successMsg("Minted successfully");
           setVisible(false);
         })
         .catch((err) => {
-          setMsg({ type: "err", content: err.message });
+          errorMsg(err.message);
         });
     } else {
-      setMsg({ content: "Invalid address" });
+      errorMsg("Invalid address");
     }
   };
 
   return (
     <>
       <Tooltip content="Mint a NFT Token">
-        <Button color="primary" size="sm" radius="full" isLoading={ownerLoading} isIconOnly onClick={handleMint}>
+        <Button color="primary" size="sm" radius="full" isLoading={ownerLoading || mintLoading} isIconOnly onClick={handleMint}>
           <HammerIcon className="text-white w-5" />
         </Button>
       </Tooltip>

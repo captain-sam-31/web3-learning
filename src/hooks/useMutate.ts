@@ -1,4 +1,4 @@
-import { useMyRedux } from "@/redux";
+import { useMessage } from "@/app/components/MessageProvider";
 import { useMutation } from "@tanstack/react-query";
 import { useMount } from "ahooks";
 
@@ -8,7 +8,7 @@ interface OptType {
 }
 // 请求速度最慢，比useRequest还慢，不想用
 export const useMutate = (service: (params?: unknown) => Promise<any>, opt: OptType = { manual: false }) => {
-  const { setMsg } = useMyRedux((state) => state);
+  const { errorMsg } = useMessage();
 
   const { mutate, data, isPending } = useMutation({
     mutationFn: async (params: unknown) => {
@@ -17,7 +17,7 @@ export const useMutate = (service: (params?: unknown) => Promise<any>, opt: OptT
       return data;
     },
     onError: (err) => {
-      setMsg({ type: "err", content: err.message });
+      errorMsg(err.message);
     },
   });
 

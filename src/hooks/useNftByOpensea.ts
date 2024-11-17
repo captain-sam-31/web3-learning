@@ -10,7 +10,7 @@ import { NftItem } from "@/app/(content)/nft-page/types";
 const provider = new ethers.JsonRpcProvider(targetNetRPC);
 const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
 
-// 通过openseaSDK获取NFT信息
+// 通过openseaSDK获取NFT信息（OpenSeaSDK只能在client模式下执行）
 export const useNftByOpensea = () => {
   const openseaSDK = useMemo(() => {
     // 官网虽有现成的Api提供，但目前不传apiKey会报错，估计不让用了（https://docs.opensea.io/reference/api-overview）
