@@ -1,5 +1,5 @@
 "use client";
-import { nftContractAddr, targetNetRPC } from "@/utils/constants";
+import { nftContractAddr, deployNetRPC } from "@/utils/constants";
 import { ethers } from "ethers";
 import { Chain, OpenSeaSDK } from "opensea-js";
 import { useMemo } from "react";
@@ -7,14 +7,13 @@ import { useFetch } from "./useFetch";
 import { NftContractAbi } from "@/abi/NftContract";
 import { NftItem } from "@/app/(content)/nft-page/types";
 
-const provider = new ethers.JsonRpcProvider(targetNetRPC);
+const provider = new ethers.JsonRpcProvider(deployNetRPC);
 const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
 
 // 通过openseaSDK获取NFT信息（OpenSeaSDK只能在client模式下执行）
 export const useNftByOpensea = () => {
   const openseaSDK = useMemo(() => {
     // 官网虽有现成的Api提供，但目前不传apiKey会报错，估计不让用了（https://docs.opensea.io/reference/api-overview）
-    const provider = new ethers.JsonRpcProvider(targetNetRPC);
     return new OpenSeaSDK(provider, { chain: Chain.Fuji /* 若非测试网，需多传apiKey字段 */ });
   }, []);
 

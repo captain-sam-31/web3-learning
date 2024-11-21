@@ -22,7 +22,7 @@ export default function SideMenu() {
   const currKey = seletected.replace(/\/(.+)-page/, (...all) => all[1]);
 
   return (
-    <aside className={cn("w-1/6 shrink-0 overflow-auto hidden sm:block", bgBlock)}>
+    <aside className={"w-1/6 shrink-0 overflow-auto hidden sm:block bg-black/5 dark:bg-white/10 rounded-large"}>
       {/* className={`[&_li[tabindex="0"]]:bg-primary`} */}
       <Listbox selectedKeys={"water"} aria-label="side menu" onAction={handleMenu}>
         {items.map((v) => (

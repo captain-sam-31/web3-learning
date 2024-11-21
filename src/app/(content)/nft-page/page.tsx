@@ -26,15 +26,6 @@ const NftPage = () => {
         >
           {(item) => <Tab key={item.id} title={item.label} />}
         </Tabs>
-        {/* <Tooltip content={nftContractAddr}>
-          <Link
-            className={cn("max-w-1/2 pr-[16px]", ellipsis)}
-            href={`https://testnet.snowtrace.io/address/${nftContractAddr}`}
-            target="_blank"
-          >
-            NFT Contract
-          </Link>
-        </Tooltip> */}
       </div>
       <div className="grow overflow-auto">
         <NftMarket show={tabKey === "market"} />

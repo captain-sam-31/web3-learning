@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { nftContractAddr, targetNetRPC } from "@/utils/constants";
+import { contractOwner, nftContractAddr, deployNetRPC } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 import { NftContractAbi } from "@/abi/NftContract";
 import { NftItem } from "@/app/(content)/nft-page/types";
@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
   //   return NextResponse.json({ msg: "accountAddr is required" }, { status: 400 });
   // }
   if (!data.length || newStamp !== timeStamp) {
-    const provider = new ethers.JsonRpcProvider(targetNetRPC);
+    // 创建只读合约实例
+    const provider = new ethers.JsonRpcProvider(deployNetRPC);
     const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
 
     const nftList: NftItem[] = [];
@@ -48,4 +49,18 @@ export async function GET(req: NextRequest) {
   }
 
   return Response.json(result.data);
+}
+// 交易NFT（涉及到私钥，基于安全性考虑，放在这里处理，即后台环境）
+export async function POST(req: NextRequest) {
+  const res = await req.json();
+  console.log("req", res);
+
+  // 创建读写合约实例（免钱包弹窗。若要钱包弹窗，需在client模式使用ethers.BrowserProvider）
+  const provider = new ethers.JsonRpcProvider(deployNetRPC);
+  const wallet = new ethers.Wallet(process.env.OWNER_PRIVATE_KEY as string, provider);
+  const nft = new ethers.Contract(nftContractAddr, NftContractAbi, wallet);
+  // await nft.safeMint(
+  //   contractOwner,
+  //   "https://vulnerable-orange-tern.myfilebase.com/ipfs/QmUxo36qSGa58YdXqtHfQnhvPndsNGsYYPP9rCVp8CB2Xv"
+  // );
 }

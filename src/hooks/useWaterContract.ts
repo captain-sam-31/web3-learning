@@ -1,25 +1,25 @@
-import { NftContractAbi } from "@/abi/NftContract";
-import { nftContractAddr, deployNetRPC } from "@/utils/constants";
+import { WatContractAbi } from "@/abi/WaterContract";
+import { watContractAddr, deployNetRPC } from "@/utils/constants";
 import { wagmiConfig } from "@/wagmi";
 import { useRequest } from "ahooks";
-import { ethers } from "ethers";
 import { Options } from "ahooks/lib/useRequest/src/types";
+import { ethers } from "ethers";
 import { writeContract } from "wagmi/actions";
 import { IExtra, IOptions } from "./types";
 
 const provider = new ethers.JsonRpcProvider(deployNetRPC);
-const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
+const contract = new ethers.Contract(watContractAddr, WatContractAbi, provider);
 /**
  * 这里的合约操作 都是需要通过MetaMask弹窗让用户确认（无需弹窗确认的方式涉及私钥，不可写在client模式）
  */
 // 合约 写入
-export const useWriteNFT = (options: IOptions) => {
+export const useWriteWat = (options: IOptions) => {
   // 如果要在useMount中使用，要改成useWriteContract，否则由于wagmi某些参数 未初始化完成 可能会报错
   const { runAsync, loading } = useRequest(
     async (args: unknown[] = [], extra: IExtra = {}) => {
       const hash = await writeContract(wagmiConfig, {
-        abi: NftContractAbi,
-        address: nftContractAddr,
+        abi: WatContractAbi,
+        address: watContractAddr,
         ...options,
         ...(args.length ? { args } : {}),
         ...extra,
@@ -33,7 +33,7 @@ export const useWriteNFT = (options: IOptions) => {
   return { loading, run: runAsync };
 };
 // 合约 读取（默认第一次会调用）
-export const useReadNFT = (options: IOptions, extra?: Options<any, any[]>) => {
+export const useReadWat = (options: IOptions, extra?: Options<any, any[]>) => {
   // 未连接钱包时，wagmi居然无法调用，改由ethers调用
   const { data, runAsync, loading } = useRequest(
     async (...args) => {

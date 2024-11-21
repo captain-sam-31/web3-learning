@@ -1,16 +1,17 @@
 "use client";
 import { Chip, cn, Image, Input, Select, SelectItem, Tooltip } from "@nextui-org/react";
-import { ellipsis } from "@/utils/commonClass";
+import { bgBlock, ellipsis } from "@/utils/commonClass";
 import Spinning from "@/app/components/Spinning";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { useMyRedux } from "@/redux";
 import { NftItem } from "../types";
-import { shortAddr } from "@/utils/utils";
+import { bigToString, shortAddr, thousands } from "@/utils/utils";
 import { useAccountChange } from "@/hooks/useAccountChange";
 import BurnButton from "./BurnButton";
 import BuyButton from "./BuyButton";
 import { SearchOutlined } from "@ant-design/icons";
+import { useReadWat } from "@/hooks/useWaterContract";
 
 interface IMetaDataProps {
   show: boolean;
@@ -20,10 +21,18 @@ const belongs = [
   { k: "2", v: "Except Mine" },
 ];
 const NftMarket = ({ show }: IMetaDataProps) => {
+  const { data: symbol } = useReadWat({ functionName: "symbol" });
+  const { data: uWat, run: watOfUser } = useReadWat({ functionName: "balanceOf" }, { manual: true });
   const { updateNFTMarket } = useMyRedux((state) => state);
   const currAddr = useAccountChange();
   const [hoverId, setHoverId] = useState<string>();
   const [filter, setFilter] = useState<any>({ belong: [], tokenId: "" });
+
+  useEffect(() => {
+    if (currAddr) {
+      watOfUser(currAddr);
+    }
+  }, [currAddr]);
   // const { data, loading } = useNftByOpensea();
   const { data, loading } = useFetch((p) => fetch(`/api/nft-market?timestamp=${p.timestamp}`), {
     initParam: { timestamp: updateNFTMarket },
@@ -65,54 +74,53 @@ const NftMarket = ({ show }: IMetaDataProps) => {
           </Select>
         </div>
         <Chip size="lg" color="primary" variant="dot">
-          {132.22} wat
+          {typeof uWat === "bigint" ? thousands(bigToString(uWat)) : "???"} {symbol}
         </Chip>
       </div>
-      <div className="grow relative grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 overflow-auto content-start">
+      <div className="grow relative overflow-hidden">
         <Spinning visible={loading} />
-        {data
-          ?.filter((v: NftItem) => {
-            const cond1 = filter.tokenId ? v.tokenId.includes(filter.tokenId) : true;
-            let cond2 = true;
-            if (filter.belong[0] && currAddr) {
-              cond2 = filter.belong[0] === "1" ? v.owner === currAddr : v.owner !== currAddr;
-            }
-            return cond1 && cond2;
-          })
-          .map((v: NftItem) => (
-            <div
-              key={v.tokenId}
-              onMouseEnter={() => setHoverId(v.tokenId)}
-              onMouseLeave={() => setHoverId("")}
-              className="p-3 rounded-large dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 flex flex-col shadow hover:shadow-lg transition-all "
-            >
-              <div className="rounded-large overflow-hidden w-full">
-                <Image
-                  className={cn(
-                    "size-full object-cover transition-transform",
-                    hoverId === v.tokenId ? "scale-125 -translate-y-3" : ""
-                  )}
-                  removeWrapper={true}
-                  src={v.image}
-                  alt=""
-                />
-              </div>
-              <div className="mt-2 relative h-[76px] flex flex-col justify-between">
-                <div className="flex justify-between items-center">
-                  <p className={`font-bold ${ellipsis}`}>{v.nftName}</p>
-                  <p className="text-sm"># {v.tokenId}</p>
+        <div className="h-full grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 pr-2 content-start overflow-auto">
+          {data
+            ?.filter((v: NftItem) => {
+              const cond1 = filter.tokenId ? v.tokenId.includes(filter.tokenId) : true;
+              let cond2 = true;
+              if (filter.belong[0] && currAddr) {
+                cond2 = filter.belong[0] === "1" ? v.owner === currAddr : v.owner !== currAddr;
+              }
+              return cond1 && cond2;
+            })
+            .map((v: NftItem) => (
+              <div
+                key={v.tokenId}
+                onMouseEnter={() => setHoverId(v.tokenId)}
+                onMouseLeave={() => setHoverId("")}
+                className={cn("p-3 dark:hover:bg-white/20 flex flex-col shadow hover:shadow-lg transition-all", bgBlock)}
+              >
+                <div className="rounded-large overflow-hidden w-full">
+                  <Image
+                    className={cn("size-full object-cover transition-transform", hoverId === v.tokenId ? "scale-125 -translate-y-3" : "")}
+                    removeWrapper={true}
+                    src={v.image}
+                    alt=""
+                  />
                 </div>
-                <div>{v.price}</div>
-                <div className="flex items-center gap-1">
-                  <p className={cn("size-[8px] rounded-full bg-primary", v.owner === currAddr ? "bg-success" : "")} />
-                  <Tooltip content={`Owner：${v.owner === currAddr ? "You" : v.owner}`}>
-                    <p>{shortAddr(v.owner)}</p>
-                  </Tooltip>
+                <div className="mt-2 relative h-[76px] flex flex-col justify-between">
+                  <div className="flex justify-between items-center">
+                    <p className={`font-bold ${ellipsis}`}>{v.nftName}</p>
+                    <p className="text-sm"># {v.tokenId}</p>
+                  </div>
+                  <div>{v.price}</div>
+                  <div className="flex items-center gap-1">
+                    <p className={cn("size-[8px] rounded-full bg-primary", v.owner === currAddr ? "bg-success" : "")} />
+                    <Tooltip content={`Owner：${v.owner === currAddr ? "You" : v.owner}`}>
+                      <p>{shortAddr(v.owner)}</p>
+                    </Tooltip>
+                  </div>
+                  {v.owner !== currAddr ? <BuyButton record={v} account={currAddr} wat={BigInt(0)} /> : <BurnButton record={v} />}
                 </div>
-                {v.owner !== currAddr ? <BuyButton record={v} /> : <BurnButton record={v} />}
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </div>
   );

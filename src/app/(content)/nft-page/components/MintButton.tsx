@@ -4,52 +4,44 @@ import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader
 import HammerIcon from "@/assets/HammerIcon";
 import { getAccount } from "@wagmi/core";
 import { wagmiConfig } from "@/wagmi";
-import { targetNetId, targetNetName } from "@/utils/constants";
 import { memo, useState } from "react";
 import { useMyRedux } from "@/redux";
-import { useWriteNFT, useReadNFT } from "@/hooks/useNFTContract";
+import { useWriteNFT } from "@/hooks/useNFTContract";
 import { useMessage } from "@/app/components/MessageProvider";
+import { useCheckBeforeTx } from "@/hooks/useCheckBeforeTx";
 
 interface IMetaInfo {
   metaInfo: MetaDataItem;
+  owner: string;
+  ownerLoading: boolean;
 }
-
+// 铸造NFT
 const MintButton = (props: IMetaInfo) => {
-  const { metaInfo } = props;
+  const { metaInfo, owner, ownerLoading } = props;
+  const isChecked = useCheckBeforeTx();
   const { setUpdateNFTMarket } = useMyRedux((state) => state);
   const { errorMsg, successMsg, infoMsg } = useMessage();
 
   const [visible, setVisible] = useState<boolean>(false);
   const [target, setTarget] = useState<string>("");
 
-  // 获取合约持有者
-  const { run: ownerFn, loading: ownerLoading } = useReadNFT({ functionName: "owner" });
   // 铸造NFT
-  const { run: mintFn, loading: mintLoading } = useWriteNFT({ functionName: "safeMint", args: [target] });
+  const { run: mintFn, loading: mintLoading } = useWriteNFT({ functionName: "safeMint" });
   // 点击铸造按钮
   const handleMint = async () => {
+    if (!(await isChecked())) return;
     const account = getAccount(wagmiConfig);
-    if (account.chainId === targetNetId) {
-      ownerFn()
-        .then((ownerAddr) => {
-          if (ownerAddr == account.address) {
-            setTarget("");
-            setVisible(true);
-          } else {
-            infoMsg("This account has no permission to operate.");
-          }
-        })
-        .catch((err) => {
-          errorMsg(err.message);
-        });
+    if (owner === account.address) {
+      setTarget("");
+      setVisible(true);
     } else {
-      infoMsg(`You need to connect Metamask first, and make sure your network is ${targetNetName}.`);
+      infoMsg("This account has no permission to operate.");
     }
   };
   // 确认铸造
   const handleOk = () => {
     if (target && /^0x[a-fA-F0-9]{40}$/.test(target)) {
-      mintFn(target, metaInfo.tokenURI)
+      mintFn([target, metaInfo.tokenURI])
         .then(() => {
           setUpdateNFTMarket(new Date().getTime());
           successMsg("Minted successfully");

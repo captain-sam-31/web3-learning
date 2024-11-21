@@ -1,5 +1,7 @@
-export const targetNetId = 43113;
-export const targetNetName = "Avalanche Fuji Testnet";
-export const targetNetRPC = "https://avalanche-fuji.infura.io/v3/e19e2e2cd089427f8e4eb8636cff1d5a";
+export const deployNetId = "0xa869";
+export const deployNetName = "Avalanche Fuji";
+export const deployNetRPC = "https://avalanche-fuji.infura.io/v3/e19e2e2cd089427f8e4eb8636cff1d5a";
+export const contractOwner = "0x759119B27Ab29984225753Ce8Ee121788D905fcc";
+export const traceDomain = "https://testnet.snowtrace.io/address";
 export const nftContractAddr = "0x83211296Df9A6Cff55A90604664d6B96e7c97a5C";
-export const watContractAddr = "0x83211296Df9A6Cff55A90604664d6B96e7c97a5C";
+export const watContractAddr = "0x7B182A5Cc68124010c2110d92738707DBA4AFE90";
