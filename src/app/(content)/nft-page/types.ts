@@ -11,7 +11,6 @@ export interface MetaDataItem {
 }
 
 export interface NftItem {
-  nftName: string;
   owner: string;
   tokenId: string;
   image: string;

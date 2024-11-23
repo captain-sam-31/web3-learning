@@ -1,6 +1,5 @@
 "use client";
-import { bgBlock } from "@/utils/commonClass";
-import { cn, Listbox, ListboxItem } from "@nextui-org/react";
+import { Listbox, ListboxItem } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
 import { Key, useState } from "react";
 

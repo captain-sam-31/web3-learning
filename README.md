@@ -2,7 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-1.先部署 NFT 合约，再部署 WaterToken 合约
+1.部署合约
+
+1）先部署 NFT 合约
+2）再部署 WaterToken 合约（部署时 需填入 NFT 合约地址）
+3）再调用 NFT 合约的 abi：setTxTokenAddress(填入 WaterToken 合约地址)
 
 2.在根目录创建.env 文件，并添加以下环境变量
 

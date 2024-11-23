@@ -6,7 +6,7 @@ import { useCheckBeforeTx } from "@/hooks/useCheckBeforeTx";
 import { useReadWat, useWriteWat } from "@/hooks/useWaterContract";
 import { bgBlock } from "@/utils/commonClass";
 import { deployNetRPC, watContractAddr } from "@/utils/constants";
-import { bigToString, thousands } from "@/utils/utils";
+import { formatEther } from "@/utils/utils";
 import { Button, cn, Input, Spinner } from "@nextui-org/react";
 import { useRequest } from "ahooks";
 import { ethers } from "ethers";
@@ -120,7 +120,7 @@ const TxBlock = ({ tokenName, tokenSymbol, update }: ITxBlock) => {
             </div>
           ) : (
             <div className="text-center text-2xl">
-              Your <span className="text-primary">{tokenName}</span> Amount
+              Your <span className="text-primary">{tokenName}</span> Balance
             </div>
           )}
           <div className="font-bold flex items-baseline justify-center gap-2 animate-pulse">
@@ -128,10 +128,10 @@ const TxBlock = ({ tokenName, tokenSymbol, update }: ITxBlock) => {
               withdrawLoading ? (
                 <Spinner />
               ) : (
-                <p className="text-5xl">{typeof cAvax === "bigint" ? thousands(bigToString(cAvax)) : "???"}</p>
+                <p className="text-5xl">{formatEther(cAvax)}</p>
               )
             ) : (
-              <p className="text-5xl">{currAddr && typeof uWat === "bigint" ? thousands(bigToString(uWat)) : "???"}</p>
+              <p className="text-5xl">{formatEther(uWat)}</p>
             )}
             <p className="text-4xl">{isOwner ? "avax" : tokenSymbol}</p>
           </div>

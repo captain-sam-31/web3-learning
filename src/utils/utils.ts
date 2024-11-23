@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { traceDomain } from "./constants";
 
 // 用于node环境调用fetch时，拼上 域名或IP（client模式可用原生fetch，会自动拼）
@@ -29,4 +30,18 @@ export const tracer = (address: string) => {
 // 将合约的uint类型转为string
 export const bigToString = (num: unknown) => {
   return ((num || 0) as bigint).toString();
+};
+// 二次封装ethers.formatEther
+export const formatEther = (wei: bigint | undefined, alt: string = "???", precision: number = 2) => {
+  if (wei === undefined) {
+    return alt || "";
+  } else {
+    const num = ethers.formatEther(wei);
+    let [intPart, decPart] = num.split(".");
+    decPart = Number(`0.${decPart || 0}`)
+      .toFixed(precision + 1) // 多取一位，避免四舍五入
+      .slice(1, -1);
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return `${intPart}${decPart}`;
+  }
 };

@@ -6,7 +6,7 @@ import { memo, useEffect, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { useMyRedux } from "@/redux";
 import { NftItem } from "../types";
-import { bigToString, shortAddr, thousands } from "@/utils/utils";
+import { formatEther, shortAddr } from "@/utils/utils";
 import { useAccountChange } from "@/hooks/useAccountChange";
 import BurnButton from "./BurnButton";
 import BuyButton from "./BuyButton";
@@ -21,10 +21,10 @@ const belongs = [
   { k: "2", v: "Except Mine" },
 ];
 const NftMarket = ({ show }: IMetaDataProps) => {
-  const { data: symbol } = useReadWat({ functionName: "symbol" });
+  const currAddr = useAccountChange();
+  const { nft, wat } = useMyRedux((state) => state.contract);
   const { data: uWat, run: watOfUser } = useReadWat({ functionName: "balanceOf" }, { manual: true });
   const { updateNFTMarket } = useMyRedux((state) => state);
-  const currAddr = useAccountChange();
   const [hoverId, setHoverId] = useState<string>();
   const [filter, setFilter] = useState<any>({ belong: [], tokenId: "" });
 
@@ -74,7 +74,7 @@ const NftMarket = ({ show }: IMetaDataProps) => {
           </Select>
         </div>
         <Chip size="lg" color="primary" variant="dot">
-          {typeof uWat === "bigint" ? thousands(bigToString(uWat)) : "???"} {symbol}
+          {formatEther(uWat)} {wat.symbol}
         </Chip>
       </div>
       <div className="grow relative overflow-hidden">
@@ -106,17 +106,30 @@ const NftMarket = ({ show }: IMetaDataProps) => {
                 </div>
                 <div className="mt-2 relative h-[76px] flex flex-col justify-between">
                   <div className="flex justify-between items-center">
-                    <p className={`font-bold ${ellipsis}`}>{v.nftName}</p>
+                    <p className={`font-bold ${ellipsis}`}>{nft.name}</p>
                     <p className="text-sm"># {v.tokenId}</p>
                   </div>
-                  <div>{v.price}</div>
+                  <div>
+                    {formatEther(BigInt(v.price))} {wat.symbol}
+                  </div>
                   <div className="flex items-center gap-1">
                     <p className={cn("size-[8px] rounded-full bg-primary", v.owner === currAddr ? "bg-success" : "")} />
                     <Tooltip content={`Owner：${v.owner === currAddr ? "You" : v.owner}`}>
                       <p>{shortAddr(v.owner)}</p>
                     </Tooltip>
                   </div>
-                  {v.owner !== currAddr ? <BuyButton record={v} account={currAddr} wat={BigInt(0)} /> : <BurnButton record={v} />}
+                  {v.owner !== currAddr ? (
+                    <BuyButton
+                      record={v}
+                      account={currAddr}
+                      uWat={uWat}
+                      update={() => {
+                        watOfUser(currAddr);
+                      }}
+                    />
+                  ) : (
+                    <BurnButton record={v} />
+                  )}
                 </div>
               </div>
             ))}

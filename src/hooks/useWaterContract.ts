@@ -25,7 +25,7 @@ export const useWriteWat = (options: IOptions) => {
         ...extra,
       });
       // 快速等2个区块确认，标准一般等6个区块确认，高安全性等12个区块确认
-      return provider.waitForTransaction(hash, 2);
+      return provider.waitForTransaction(hash, 1);
     },
     { manual: true }
   );
