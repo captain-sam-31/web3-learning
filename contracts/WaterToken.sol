@@ -22,39 +22,18 @@ contract WaterToken is ERC20, ERC20Burnable, Ownable, ERC20Permit {
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
-        approveNFT(to, balanceOf(to));
     }
-    // 重写burn函数
-    function burn(uint256 value) public override {
-        _burn(_msgSender(), value);
-        // 更新NFT可操作的waterToken数量
-        approveNFT(msg.sender, balanceOf(msg.sender));
-    }
-    // 重写burnFrom函数
-    function burnFrom(address account, uint256 value) public override {
-        _spendAllowance(account, _msgSender(), value);
-        _burn(account, value);
-        // 更新NFT可操作的waterToken数量
-        approveNFT(account, balanceOf(account));
-    }
-    // 重写transfer函数
-    function transfer(address to, uint256 value) public override returns (bool) {
-        address owner = _msgSender();
-        _transfer(owner, to, value);
-        // 更新NFT可操作的waterToken数量
-        approveNFT(owner, balanceOf(owner));
-        approveNFT(to, balanceOf(to));
-        return true;
-    }
-    // 重写transferFrom函数
-    function transferFrom(address from, address to, uint256 value) public override returns (bool) {
-        address spender = _msgSender();
-        _spendAllowance(from, spender, value);
-        _transfer(from, to, value);
-        // 更新NFT可操作的waterToken数量
-        approveNFT(from, balanceOf(from));
-        approveNFT(to, balanceOf(to));
-        return true;
+    // 重写update函数（所有WaterToken的操作最后都会走到这里，所以只需在此写一次即可）
+    function _update(address from, address to, uint256 value) internal override(ERC20) {
+        // 延用父合约的update逻辑
+        super._update(from, to, value);
+        // 授权NFT合约可操作所有waterToken
+        if (from != address(0)) {
+            approveNFT(from, balanceOf(from));
+        }
+        if (to != address(0)) {
+            approveNFT(to, balanceOf(to));
+        }
     }
     // 批准NFT合约 操作所有WaterToken代币
     function approveNFT(address ownerAddr, uint256 amount) private {
@@ -71,7 +50,6 @@ contract WaterToken is ERC20, ERC20Burnable, Ownable, ERC20Permit {
         }
         // 1 eth 兑换 1 waterToken
         _mint(msg.sender, msg.value);
-        approveNFT(msg.sender, balanceOf(msg.sender));
     }
     // 取回 所有原生币
     function withdraw() external onlyOwner{

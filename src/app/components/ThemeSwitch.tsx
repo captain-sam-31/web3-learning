@@ -1,10 +1,11 @@
 "use client";
-import { Switch } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import { useMount } from "ahooks";
-import { SunOutlined, MoonFilled } from "@ant-design/icons";
+import { SunFilled, MoonOutlined } from "@ant-design/icons";
+import { memo } from "react";
 
-export default function ThemeSwitch() {
+const ThemeSwitch = () => {
   const { theme, setTheme } = useTheme();
 
   useMount(() => {
@@ -19,13 +20,17 @@ export default function ThemeSwitch() {
   };
 
   return (
-    <Switch
-      isSelected={theme ? theme === "dark" : true}
-      onChange={handleChange}
-      size="md"
-      color="primary"
-      startContent={<MoonFilled />}
-      endContent={<SunOutlined />}
+    <Button
+      isIconOnly
+      onClick={handleChange}
+      color={"primary"}
+      variant="flat"
+      radius="full"
+      size="sm"
+      title={`Switch to ${theme === "dark" ? "light" : "dark"}`}
+      className="text-md"
+      endContent={theme === "dark" ? <SunFilled /> : <MoonOutlined />}
     />
   );
-}
+};
+export default memo(ThemeSwitch);

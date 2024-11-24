@@ -1,35 +1,46 @@
 "use client";
-import { Listbox, ListboxItem } from "@nextui-org/react";
+import { menus } from "@/utils/constants";
+import { cn, Listbox, ListboxItem } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
-import { Key, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
-const items = [
-  { key: "nft", label: "Plant NFT" },
-  { key: "water", label: "Water Token" },
-];
-
-export default function SideMenu() {
+const SideMenu = () => {
   const path = usePathname();
   const nav = useRouter();
-  const [seletected, setSelected] = useState(path);
+  const [seletected, setSelected] = useState<string>(path);
 
-  const handleMenu = (key: Key) => {
-    setSelected(`/${key}-page`);
-    nav.replace(`/${key}-page`);
+  useEffect(() => {
+    setSelected(path);
+  }, [path]);
+
+  const handleMenu = (path: string) => {
+    setSelected(path);
+    nav.replace(path);
   };
 
-  const currKey = seletected.replace(/\/(.+)-page/, (...all) => all[1]);
+  const currKey = useMemo(() => seletected.replace(/\/(.+)-page/, (...all) => all[1]), [seletected]);
 
   return (
-    <aside className={"w-1/6 shrink-0 overflow-auto hidden sm:block bg-black/5 dark:bg-white/10 rounded-large"}>
+    <aside
+      className={cn(
+        "w-1/6 shrink-0 overflow-auto hidden md:block bg-black/5 dark:bg-white/10 rounded-large",
+        path === "/" ? "!hidden" : ""
+      )}
+    >
       {/* className={`[&_li[tabindex="0"]]:bg-primary`} */}
-      <Listbox selectedKeys={"water"} aria-label="side menu" onAction={handleMenu}>
-        {items.map((v) => (
-          <ListboxItem key={v.key} color="primary" className={currKey === v.key ? "bg-primary text-white" : ""}>
+      <Listbox aria-label="side menu">
+        {menus.map((v) => (
+          <ListboxItem
+            key={v.key}
+            color="primary"
+            className={currKey === v.key ? "bg-primary text-white" : ""}
+            onClick={() => handleMenu(v.path)}
+          >
             {v.label}
           </ListboxItem>
         ))}
       </Listbox>
     </aside>
   );
-}
+};
+export default memo(SideMenu);

@@ -47,21 +47,20 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(result.data);
 }
-// 交易NFT（涉及到私钥，基于安全性考虑，放在这里处理，即后台环境）
+// 交易NFT（若涉及到敏感信息，基于安全性考虑，要放在后台处理，即此处的node环境）
 export async function POST(req: NextRequest) {
-  let params: { to: string; tokenId: string };
-  try {
-    params = await req.json();
-    if (!params.to || !params.tokenId) throw Error();
-  } catch (e) {
-    return NextResponse.json({ msg: "Invalid request params" }, { status: 400 });
-  }
-  // 创建读写合约实例（免钱包弹窗。若要钱包弹窗，需在client模式使用ethers.BrowserProvider）
-  const provider = new ethers.JsonRpcProvider(deployNetRPC);
-  const wallet = new ethers.Wallet(process.env.OWNER_PRIVATE_KEY as string, provider);
-  const nft = new ethers.Contract(nftContractAddr, NftContractAbi, wallet);
-  const tx = await nft.transactNFT(params.to, params.tokenId);
-  const res = await tx.wait();
-  console.log(tx, res, 77777);
-  return NextResponse.json({ msg: "Successful" }, { status: 200 });
+  // let params: { tokenId: string };
+  // try {
+  //   params = await req.json();
+  //   if (!params.tokenId) throw Error();
+  // } catch (e) {
+  //   return NextResponse.json({ msg: "Invalid request params" }, { status: 400 });
+  // }
+  // // 创建读写合约实例（免钱包弹窗。若要钱包弹窗，需在client模式使用ethers.BrowserProvider）
+  // const provider = new ethers.JsonRpcProvider(deployNetRPC);
+  // const wallet = new ethers.Wallet(process.env.OWNER_PRIVATE_KEY as string, provider);
+  // const nft = new ethers.Contract(nftContractAddr, NftContractAbi, wallet);
+  // const tx = await nft.transactNFT(params.tokenId);
+  // const res = await tx.wait();
+  // return NextResponse.json(null, { status: 200 });
 }

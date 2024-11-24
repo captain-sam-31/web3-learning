@@ -13,9 +13,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ```bash
 // 所有 NFT metadata 的 json 配置文件
 NFT_IPFS_JSON_URL=.....
-
-// 用于部署合约那个 MetaMask 账户的 私钥
-OWNER_PRIVATE_KEY=....
 ```
 
 3.安装依赖，启动项目

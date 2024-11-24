@@ -38,26 +38,30 @@ contract PlantNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable,
         }
         _txTokenAddr = addr;
     }
-    // 交易NFT函数(params：NFT接收者，NFT Id)
-    function transactNFT(address to, uint256 tokenId) public onlyOwner {
+    // 交易NFT函数
+    function transactNFT(uint256 tokenId) public {
         // 获取NFT当前waterToken价格，若为0则表示未定价，不可交易
         uint256 price = _priceOfNFT[tokenId];
         if(price == 0){
             revert NFTIsUnminted(tokenId);
         }
         require(_txTokenAddr != address(0), "setTxTokenAddress first");
+        // NFT的交易源和目标
+        address from = ownerOf(tokenId);
+        address to = msg.sender;
+        require(from != to, "source and target can't be the same");
         // 先给NFT原持有者转waterToken
-        bool isSuccess = WaterToken(_txTokenAddr).transferFrom(to, msg.sender, price);
+        bool isSuccess = WaterToken(_txTokenAddr).transferFrom(to, from, price);
         if(!isSuccess){
-            revert TransferERC20Fail(to, msg.sender);
+            revert TransferERC20Fail(from, to);
         }
-        // 再将NFT转给新持有者
-        safeTransferFrom(msg.sender, to, tokenId);
+        // 再由本合约 将NFT转给新持有者
+        PlantNFT(this).safeTransferFrom(from, to, tokenId);
         emit TransactNFTSuccess(to, tokenId);
         // 每次交易成功 涨0.01WaT
         _priceOfNFT[tokenId] += 1*10**16; 
     }
-
+    // 铸造成功，则初始化NFT价格
     function safeMint(address to, string memory uri) public onlyOwner {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
@@ -72,6 +76,8 @@ contract PlantNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable,
         override(ERC721, ERC721Enumerable)
         returns (address)
     {
+        // 授权本NFT合约 可操作所有NFT（所有NFT的操作最后都会走到这里，所以只需在此写一次即可）
+        _setApprovalForAll(to, address(this), true);
         return super._update(to, tokenId, auth);
     }
 

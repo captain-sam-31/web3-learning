@@ -37,9 +37,7 @@ const BurnButton = ({ record }: IBurnButtonProps) => {
             setUpdateNFTMarket(new Date().getTime());
             successMsg("Burnt successfully");
           })
-          .catch((err) => {
-            errorMsg(err.message);
-          });
+          .catch((err) => errorMsg(err.message));
       },
     });
   };

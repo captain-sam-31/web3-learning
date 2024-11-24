@@ -47,9 +47,7 @@ const MintButton = (props: IMetaInfo) => {
           successMsg("Minted successfully");
           setVisible(false);
         })
-        .catch((err) => {
-          errorMsg(err.message);
-        });
+        .catch((err) => errorMsg(err.message));
     } else {
       errorMsg("Invalid address");
     }

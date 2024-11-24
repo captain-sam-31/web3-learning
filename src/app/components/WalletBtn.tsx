@@ -7,7 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ToolOutlined } from "@ant-design/icons";
 import IdentIcon from "@/assets/IdentIcon";
 
-const WalletBtn = memo(() => {
+const WalletBtn = () => {
   return (
     <ConnectButton.Custom>
       {(props) => {
@@ -47,16 +47,23 @@ const WalletBtn = memo(() => {
               }
 
               return (
-                <div style={{ display: "flex", gap: 12 }}>
+                <div className="flex items-center gap-2">
                   <Button radius="full" color="primary" variant="flat" onClick={openChainModal} size="sm">
                     {chain.hasIcon && (
                       <Image alt={chain.name ?? "Chain icon"} src={chain.iconUrl || ""} width={14} height={14} priority />
                     )}
                     {chain.name}
                   </Button>
-                  <Button onClick={openAccountModal} color="primary" variant="flat" radius="full" size="sm">
-                    {account.displayName}
+                  <Button
+                    onClick={openAccountModal}
+                    className="flex items-center gap-1"
+                    color="primary"
+                    variant="flat"
+                    radius="full"
+                    size="sm"
+                  >
                     <IdentIcon addr={account.address} size={14} />
+                    {account.displayName}
                     {account.displayBalance ? ` (${account.displayBalance})` : ""}
                   </Button>
                 </div>
@@ -67,7 +74,6 @@ const WalletBtn = memo(() => {
       }}
     </ConnectButton.Custom>
   );
-});
+};
 
-WalletBtn.displayName = "WalletBtn";
-export default WalletBtn;
+export default memo(WalletBtn);

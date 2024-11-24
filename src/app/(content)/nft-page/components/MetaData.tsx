@@ -4,12 +4,13 @@ import MintButton from "./MintButton";
 import { bgBlock, ellipsis } from "@/utils/commonClass";
 import { useFetch } from "@/hooks/useFetch";
 import Spinning from "@/app/components/Spinning";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { MetaDataItem } from "../types";
 import { nftContractAddr } from "@/utils/constants";
 import { SearchOutlined } from "@ant-design/icons";
 import { tracer } from "@/utils/utils";
 import { useReadNFT } from "@/hooks/useNFTContract";
+import Empty from "@/app/components/Empty";
 
 interface IMetaDataProps {
   show: boolean;
@@ -22,6 +23,19 @@ const MetaData = ({ show }: IMetaDataProps) => {
   const { data: owner, loading: ownerLoading } = useReadNFT({ functionName: "owner" });
   // 获取metadata
   const { data, loading } = useFetch(() => fetch(`/api/nft-metadata`));
+
+  const list = useMemo(() => {
+    return (
+      data?.filter((v: MetaDataItem) => {
+        if (filter.search) {
+          const cond1 = v.name.includes(filter.search);
+          const cond2 = v.attributes.some((a) => a.value.includes(filter.search));
+          return cond1 || cond2;
+        }
+        return true;
+      }) || []
+    );
+  }, [data, filter]);
 
   return (
     <div className={cn("h-full flex flex-col gap-4", show ? "" : "hidden")}>
@@ -46,18 +60,9 @@ const MetaData = ({ show }: IMetaDataProps) => {
       </div>
       <div className="grow relative overflow-hidden">
         <Spinning visible={loading} />
-        <div className={"h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 grow pr-2 overflow-auto content-start"}>
-          {data
-            ?.filter((v: MetaDataItem) => {
-              if (filter.search) {
-                const cond1 = v.name.includes(filter.search);
-                const cond2 = v.attributes.some((a) => a.value.includes(filter.search));
-                return cond1 || cond2;
-              } else {
-                return true;
-              }
-            })
-            .map((v: MetaDataItem) => (
+        {list.length ? (
+          <div className={"h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 grow pr-2 overflow-auto content-start"}>
+            {list.map((v: MetaDataItem) => (
               <div
                 key={v.id}
                 onMouseEnter={() => setHoverId(v.id)}
@@ -93,7 +98,10 @@ const MetaData = ({ show }: IMetaDataProps) => {
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <Empty loading={loading} />
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import { Chip, cn, Image, Input, Select, SelectItem, Tooltip } from "@nextui-org/react";
 import { bgBlock, ellipsis } from "@/utils/commonClass";
 import Spinning from "@/app/components/Spinning";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { useMyRedux } from "@/redux";
 import { NftItem } from "../types";
@@ -12,6 +12,7 @@ import BurnButton from "./BurnButton";
 import BuyButton from "./BuyButton";
 import { SearchOutlined } from "@ant-design/icons";
 import { useReadWat } from "@/hooks/useWaterContract";
+import Empty from "@/app/components/Empty";
 
 interface IMetaDataProps {
   show: boolean;
@@ -38,6 +39,19 @@ const NftMarket = ({ show }: IMetaDataProps) => {
     initParam: { timestamp: updateNFTMarket },
     refreshDeps: [updateNFTMarket],
   });
+
+  const list = useMemo(() => {
+    return (
+      data?.filter((v: NftItem) => {
+        const cond1 = filter.tokenId ? v.tokenId.includes(filter.tokenId) : true;
+        let cond2 = true;
+        if (filter.belong[0] && currAddr) {
+          cond2 = filter.belong[0] === "1" ? v.owner === currAddr : v.owner !== currAddr;
+        }
+        return cond1 && cond2;
+      }) || []
+    );
+  }, [data, filter]);
 
   return (
     <div className={cn("h-full flex flex-col gap-4", show ? "" : "hidden")}>
@@ -79,17 +93,9 @@ const NftMarket = ({ show }: IMetaDataProps) => {
       </div>
       <div className="grow relative overflow-hidden">
         <Spinning visible={loading} />
-        <div className="h-full grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 pr-2 content-start overflow-auto">
-          {data
-            ?.filter((v: NftItem) => {
-              const cond1 = filter.tokenId ? v.tokenId.includes(filter.tokenId) : true;
-              let cond2 = true;
-              if (filter.belong[0] && currAddr) {
-                cond2 = filter.belong[0] === "1" ? v.owner === currAddr : v.owner !== currAddr;
-              }
-              return cond1 && cond2;
-            })
-            .map((v: NftItem) => (
+        {list.length ? (
+          <div className="h-full grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4 pr-2 content-start overflow-auto">
+            {list.map((v: NftItem) => (
               <div
                 key={v.tokenId}
                 onMouseEnter={() => setHoverId(v.tokenId)}
@@ -121,7 +127,6 @@ const NftMarket = ({ show }: IMetaDataProps) => {
                   {v.owner !== currAddr ? (
                     <BuyButton
                       record={v}
-                      account={currAddr}
                       uWat={uWat}
                       update={() => {
                         watOfUser(currAddr);
@@ -133,7 +138,10 @@ const NftMarket = ({ show }: IMetaDataProps) => {
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <Empty loading={loading} />
+        )}
       </div>
     </div>
   );
