@@ -12,10 +12,8 @@ const Spinning = (props: SpinningProps) => {
 
   return visible ? (
     <div
-      className={cn(
-        "absolute left-0 top-0 size-full rounded-large flex items-center justify-center backdrop-blur-sm z-[30]",
-        bgBlock
-      )}
+      className={cn("absolute left-0 top-0 size-full rounded-large flex items-center justify-center backdrop-blur-sm", bgBlock)}
+      style={{ zIndex: zIndex ?? 30 }}
     >
       <Spinner label="Loading..." {...rest} />
     </div>

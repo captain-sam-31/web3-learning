@@ -1,3 +1,4 @@
+// 针对开发时（dev）的代码检测
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],

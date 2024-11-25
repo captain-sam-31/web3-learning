@@ -7,6 +7,9 @@ const nextConfig = {
       hostname: 'vulnerable-orange-tern.myfilebase.com',
     }],
   },
+  // eslint: {
+  //   ignoreDuringBuilds: true, //构建时忽略所有eslint检测
+  // }
   // rewrites 只对 use client 生效
   // rewrites: async () => {
   //   return [

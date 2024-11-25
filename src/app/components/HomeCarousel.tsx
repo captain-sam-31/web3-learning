@@ -11,7 +11,7 @@ let timer: number | null = null;
 // 临时菜单
 const unknownMenu = { key: "", label: "???", path: "/", desc: `??????????????????????` };
 const menuItems = menus.concat([unknownMenu]);
-const menuIcons = [<DollarOutlined />, <CrownOutlined />, <QuestionCircleOutlined />];
+const menuIcons = [<DollarOutlined key={0} />, <CrownOutlined key={1} />, <QuestionCircleOutlined key={2} />];
 
 const HomeCarousel = () => {
   const nav = useRouter();

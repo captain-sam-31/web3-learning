@@ -1,0 +1,8 @@
+// vscode配置
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"  // 保存时自动删除没用到的import变量
+  },
+  "editor.formatOnSave": true
+}

@@ -7,7 +7,6 @@ import { cn, Link } from "@nextui-org/react";
 import { memo } from "react";
 import TxBlock from "./TxBlock";
 import { useMyRedux } from "@/redux";
-import { ethers } from "ethers";
 
 // 需动态获取数据的模块
 const InteractBlock = () => {

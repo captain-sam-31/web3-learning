@@ -20,8 +20,12 @@ NFT_IPFS_JSON_URL=.....
 ```bash
 # 安装依赖（别用pnpm安装，否则有些依赖版本会错乱）
 npm install
-# 启动
+# 启动（开发环境）
 npm run dev
+# 打包构建
+npm run build
+# 启动构建后的静态文件（生产环境）
+npm run start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

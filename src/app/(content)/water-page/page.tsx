@@ -12,7 +12,7 @@ export default function WaterPage() {
         >
           <div className="text-6xl font-bold">Water Token</div>
           <div className="text-2xl">
-            A fungible token which symbol is "wat", you can use it for getting virtual items on this website.
+            A fungible token which symbol is &quot;wat&quot;, you can use it for getting virtual items on this website.
           </div>
         </div>
       </div>
