@@ -131,7 +131,7 @@ const TxBlock = ({ tokenName, tokenSymbol, update }: ITxBlock) => {
                 <p className="text-5xl">{formatEther(cAvax)}</p>
               )
             ) : (
-              <p className="text-5xl">{formatEther(uWat)}</p>
+              <p className="text-5xl">{formatEther(currAddr ? uWat : undefined)}</p>
             )}
             <p className="text-4xl">{isOwner ? "avax" : tokenSymbol}</p>
           </div>
