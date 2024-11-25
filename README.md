@@ -18,7 +18,7 @@ NFT_IPFS_JSON_URL=.....
 3.安装依赖，启动项目
 
 ```bash
-# 安装依赖（别用pnpm安装，否则有些依赖版本会错乱）
+# 安装依赖（由于一开始是用npm安装，所以别改用pnpm安装，否则有些依赖版本会错乱）
 npm install
 # 启动（开发环境）
 npm run dev
