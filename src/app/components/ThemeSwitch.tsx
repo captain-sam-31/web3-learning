@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import { useTheme } from "next-themes";
-import { useMount } from "ahooks";
 import { SunFilled, MoonOutlined } from "@ant-design/icons";
-import { memo } from "react";
+import { memo, useMemo } from "react";
+import { useMount } from "ahooks";
 
 const ThemeSwitch = () => {
   const { theme, setTheme } = useTheme();
@@ -19,6 +19,8 @@ const ThemeSwitch = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const isDark = useMemo(() => theme === undefined || theme === "dark", [theme]);
+
   return (
     <Button
       isIconOnly
@@ -27,9 +29,9 @@ const ThemeSwitch = () => {
       variant="flat"
       radius="full"
       size="sm"
-      title={`Switch to ${theme === "dark" ? "light" : "dark"}`}
+      title={`Switch to ${isDark ? "light" : "dark"}`}
       className="text-md"
-      endContent={theme === "dark" ? <SunFilled /> : <MoonOutlined />}
+      endContent={isDark ? <SunFilled /> : <MoonOutlined />}
     />
   );
 };

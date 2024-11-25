@@ -104,7 +104,10 @@ const NftMarket = ({ show }: IMetaDataProps) => {
               >
                 <div className="rounded-large overflow-hidden w-full">
                   <Image
-                    className={cn("size-full object-cover transition-transform", hoverId === v.tokenId ? "scale-125 -translate-y-3" : "")}
+                    className={cn(
+                      "size-full object-cover transition-transform",
+                      hoverId === v.tokenId ? "scale-125 -translate-y-3" : ""
+                    )}
                     removeWrapper={true}
                     src={v.image}
                     alt=""
