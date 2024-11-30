@@ -1,3 +1,4 @@
+export const deploySymbol = "AVAX";
 export const deployNetId = "0xa869";
 export const deployNetName = "Avalanche Fuji";
 export const deployNetRPC = "https://avalanche-fuji.infura.io/v3/e19e2e2cd089427f8e4eb8636cff1d5a";

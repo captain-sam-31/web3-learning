@@ -29,11 +29,15 @@ export const useFetch = (service: ServiceType, opt: OptType = { manual: false, r
     setLoading(true);
     service(params)
       .then(async (res) => {
-        const d = res?.json ? await res.json() : res;
-        setData(d);
+        const jsonData = await res.json();
+        if (jsonData.resCode === 1000) {
+          setData(jsonData.data);
+        } else {
+          throw new Error(JSON.stringify(jsonData.data));
+        }
       })
       .catch((err) => {
-        errorMsg(err.message);
+        errorMsg(err.message || "Fetch Failed");
       })
       .finally(() => {
         setLoading(false);

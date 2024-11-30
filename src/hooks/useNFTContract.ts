@@ -1,11 +1,11 @@
 import { NftContractAbi } from "@/abi/NftContract";
-import { nftContractAddr, deployNetRPC } from "@/utils/constants";
+import { deployNetRPC, nftContractAddr } from "@/utils/constants";
+import { IExtra, IOptions } from "@/utils/types";
 import { wagmiConfig } from "@/wagmi";
 import { useRequest } from "ahooks";
-import { ethers } from "ethers";
 import { Options } from "ahooks/lib/useRequest/src/types";
+import { ethers } from "ethers";
 import { writeContract } from "wagmi/actions";
-import { IExtra, IOptions } from "./types";
 
 const provider = new ethers.JsonRpcProvider(deployNetRPC);
 const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);

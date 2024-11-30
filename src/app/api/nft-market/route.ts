@@ -1,8 +1,10 @@
-import { ethers } from "ethers";
-import { nftContractAddr, deployNetRPC } from "@/utils/constants";
-import { NextRequest, NextResponse } from "next/server";
 import { NftContractAbi } from "@/abi/NftContract";
 import { NftItem } from "@/app/(content)/nft-page/types";
+import { deployNetRPC, nftContractAddr } from "@/utils/constants";
+import { ResultItem } from "@/utils/types";
+import { apiRes } from "@/utils/utils";
+import { ethers } from "ethers";
+import { NextRequest, NextResponse } from "next/server";
 
 interface NftResult {
   data: NftItem[];
@@ -15,37 +17,42 @@ const result: NftResult = {
 };
 // 通过合约的 tokenByIndex 和 totalSupply 轮询获取NFT列表（由于是轮询，所以比较慢）
 export async function GET(req: NextRequest) {
+  let resInfo: ResultItem;
   const { data, timeStamp } = result;
   const search = new URL(req.url).searchParams;
   const newStamp = Number(search.get("timestamp") || timeStamp);
 
-  if (!data.length || newStamp !== timeStamp) {
-    // 创建只读合约实例
-    const provider = new ethers.JsonRpcProvider(deployNetRPC);
-    const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
+  try {
+    if (!data.length || newStamp !== timeStamp) {
+      // 创建只读合约实例
+      const provider = new ethers.JsonRpcProvider(deployNetRPC);
+      const contract = new ethers.Contract(nftContractAddr, NftContractAbi, provider);
 
-    const nftList: NftItem[] = [];
-    const totalSupply = await contract.totalSupply();
+      const nftList: NftItem[] = [];
+      const totalSupply = await contract.totalSupply();
 
-    for (let i = totalSupply - BigInt(1); i >= BigInt(0); i--) {
-      const tokenId = await contract.tokenByIndex(i);
-      const tokenURI = await contract.tokenURI(tokenId);
-      const owner = await contract.ownerOf(tokenId);
-      const price = await contract.priceOfNFT(tokenId);
-      const res = await fetch(tokenURI);
-      const metadata = await res.json();
-      nftList.push({
-        owner: owner.toLowerCase(),
-        tokenId: tokenId.toString(),
-        image: metadata.image,
-        price: price.toString(),
-      });
+      for (let i = totalSupply - BigInt(1); i >= BigInt(0); i--) {
+        const tokenId = await contract.tokenByIndex(i);
+        const tokenURI = await contract.tokenURI(tokenId);
+        const owner = await contract.ownerOf(tokenId);
+        const price = await contract.priceOfNFT(tokenId);
+        const res = await fetch(tokenURI);
+        const metadata = await res.json();
+        nftList.push({
+          owner: owner.toLowerCase(),
+          tokenId: tokenId.toString(),
+          image: metadata.image,
+          price: price.toString(),
+        });
+      }
+      result.data = nftList;
+      result.timeStamp = Number(newStamp);
     }
-    result.data = nftList;
-    result.timeStamp = Number(newStamp);
+    resInfo = apiRes.succ(result.data);
+  } catch (err) {
+    resInfo = apiRes.fail(err);
   }
-
-  return NextResponse.json(result.data);
+  return NextResponse.json(resInfo);
 }
 // 交易NFT（若涉及到敏感信息，基于安全性考虑，要放在后台处理，即此处的node环境）
 // export async function POST(req: NextRequest) {

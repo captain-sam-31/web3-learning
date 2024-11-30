@@ -18,7 +18,7 @@ export const useCheckBeforeTx = () => {
       errorMsg("Please connect to MetaMask first");
       return false;
     }
-    // 是否切换到avalanche fuji测试网
+    // 是否切换到目标网（即合约部署所在的网）
     const chainId = await window.ethereum.request({ method: "eth_chainId", params: [] });
     if (chainId !== deployNetId) {
       errorMsg(`Please switch to ${deployNetName}, which is permitted to operate`);

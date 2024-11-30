@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { traceDomain } from "./constants";
+import { ResultInfo } from "./types";
 
 // 用于node环境调用fetch时，拼上 域名或IP（client模式可用原生fetch，会自动拼）
 export const wFetch = async (url: string, options?: RequestInit) => {
@@ -44,4 +45,9 @@ export const formatEther = (wei: bigint | undefined, alt: string = "???", precis
     intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return `${intPart}${decPart}`;
   }
+};
+// node请求定义的返回结构（若有后端接口，可改为与后端定义保持一致）
+export const apiRes: ResultInfo = {
+  succ: (data = null, resMsg = "Fetch Successful") => ({ data, resCode: 1000, resMsg }),
+  fail: (data = null, resMsg = "Fetch Failed") => ({ data, resCode: 5000, resMsg }),
 };
